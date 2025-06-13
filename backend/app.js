@@ -4,7 +4,8 @@ const cors = require('cors')
 const authRouter = require("./router/authRouter")
 const productRouter = require("./router/productRouter")
 const dotenv = require("dotenv")
-const mongoose = require("mongoose")
+const connectDB = require("./config/db")
+const { notFound, errorHandler } = require("./middleware/errorMiddleware")
 
 // 🔁 Will change origin in CORS during deployment (Render URL)
 // ✅ MongoDB URI will be replaced with Render’s DB URI in deployment
@@ -20,12 +21,13 @@ app.use(cors({
 }))
 app.use(express.json())
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("database connected"))
-    .catch(() => console.log("connection failed"))
+connectDB()
 
 app.use("/auth", authRouter)
 app.use("/product", productRouter)
+
+app.use(notFound)
+app.use(errorHandler)
 
 app.listen(PORT, () => {
     console.log(`server is running on ${PORT}`);
