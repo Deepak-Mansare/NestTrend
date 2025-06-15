@@ -23,12 +23,12 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     mobile: {
-        type: Number,
+        type: String,
         required: true,
         minLength: 4
     }
 }, { timestamps: true })
 
-const userModel = mongoose.model("users", userSchema)
+const userModel = mongoose.model("User", userSchema)
 
 module.exports = userModel
