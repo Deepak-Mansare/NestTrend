@@ -19,14 +19,18 @@ const handleLogin = async (req, res) => {
             return res.send({ message: "Wrong password" })
         }
 
-        const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" })
+        const token = await jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "24h" })
         res.send({
             message: "Login successful", token
             , user: {
                 id: user._id,
                 userName: user.userName,
                 email: user.email,
-                gender: user.gender
+                gender: user.gender,
+                role: user.role
             }
         })
     } catch (error) {
@@ -37,8 +41,8 @@ const handleLogin = async (req, res) => {
 
 // Register route
 const handleRegister = async (req, res) => {
-    const { userName, email, password, gender, mobile } = req.body
-    if (userName || !email || !password || !userName || !mobile) {
+    const { userName, email, password, gender, mobile, role } = req.body
+    if (!userName || !email || !password || !gender || !mobile) {
         return res.status(400).json({ message: "All fields are required" })
     }
     try {
@@ -50,7 +54,7 @@ const handleRegister = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        await userModel.create({ userName, email, password: hashedPassword, gender, mobile })
+        await userModel.create({ userName, email, password: hashedPassword, gender, mobile, role })
         // 🔁 Later we'll hash password here using bcrypt before saving to DB
         res.send({ message: "User registered" })
     } catch (error) {
