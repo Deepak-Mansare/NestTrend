@@ -6,7 +6,10 @@ const productRouter = require("./router/productRouter")
 const cartRouter = require("./router/cartRouter")
 const addressRouter = require("./router/addressRouter")
 const orderRouter = require("./router/orderRouter")
+const paymentRouter = require("./router/paymentRouter")
 const dotenv = require("dotenv")
+const helmet = require("helmet")
+const compression = require("compression")
 const connectDB = require("./config/db")
 const { notFound, errorHandler } = require("./middleware/errorMiddleware")
 
@@ -23,6 +26,8 @@ app.use(cors({
     credentials: true
 }))
 app.use(express.json())
+app.use(helmet())
+app.use(compression())
 
 connectDB()
 
@@ -31,6 +36,7 @@ app.use("/product", productRouter)
 app.use("/cart", cartRouter)
 app.use("/address", addressRouter)
 app.use("/order", orderRouter)
+app.use("/payment", paymentRouter)
 
 app.use(notFound)
 app.use(errorHandler)
