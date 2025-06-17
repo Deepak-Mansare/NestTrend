@@ -7,9 +7,9 @@ const handlecreateProduct = async (req, res) => {
         if (!product) {
             return res.send({ message: "product not added" })
         }
-        res.send({ message: "product added" })
+        res.json({ message: "product added", product })
     } catch (err) {
-        res.send({ message: "Something went wrong" })
+        res.json({ message: "Something went wrong" })
     }
 }
 
@@ -17,11 +17,11 @@ const handlegetProducts = async (req, res) => {
     try {
         const products = await productModel.find()
         if (!products) {
-            return res.send({ message: "Products not found" })
+            return res.json({ message: "Products not found" })
         }
-        res.send({ message: "success", products: products })
+        res.json({ message: "success", products })
     } catch (err) {
-        res.send({ message: "Something went wrong" })
+        res.json({ message: "Something went wrong" })
     }
 }
 
@@ -30,11 +30,11 @@ const handlegetProduct = async (req, res) => {
     try {
         const product = await productModel.findById(id)
         if (!product) {
-            return res.send({ message: "This product is not available" })
+            return res.json({ message: "This product is not available" })
         }
-        res.send({ message: "Product found", product: product })
+        res.json({ message: "Success", product: product })
     } catch (err) {
-        res.send({ message: "Something went wrong" })
+        res.json({ message: "Something went wrong" })
     }
 }
 
@@ -42,28 +42,46 @@ const handleUpdateProduct = async (req, res) => {
     const id = req.params.id
     const { name, brand, price } = req.body
     try {
-        const product = await productModel.findByIdAndUpdate(id,
+
+        const existingProduct = await productModel.findById(id)
+
+        if (!existingProduct) {
+            return res.json({ message: "Product not found" })
+        }
+
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            id,
             { name, brand, price },
             { new: true, runValidators: true })
-        if (!product) {
-            return res.send({ message: "product not updated" })
+
+        if (!updatedProduct) {
+            return res.json({ message: "product not updated" })
         }
-        res.send({ message: "product updated", product: product })
+
+        res.json({ message: "product updated", updatedProduct: updatedProduct })
     } catch (err) {
-        res.send({ message: "Something went wrong" })
+        res.json({ message: "Something went wrong" })
     }
 }
 
 const handleDeleteProduct = async (req, res) => {
     const id = req.params.id
     try {
-        const product = await productModel.findByIdAndDelete(id)
-        if (!product) {
-            return res.send({ message: "product not found" })
+        const existingProduct = await productModel.findById(id)
+
+        if (!existingProduct) {
+            return res.json({ message: "Product not found" })
         }
-        res.send({ message: "product deleted" })
+
+        const deletedProduct = await productModel.findByIdAndDelete(id)
+
+        if (!deletedProduct) {
+            return res.json({ message: "product not deleted" })
+        }
+
+        res.json({ message: "product deleted sucessfully" })
     } catch (err) {
-        res.send({ message: "Something went wrong" })
+        res.json({ message: "Something went wrong" })
     }
 }
 

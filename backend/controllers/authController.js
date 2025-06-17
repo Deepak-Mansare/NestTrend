@@ -24,8 +24,9 @@ const handleLogin = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "24h" })
         res.send({
-            message: "Login successful", token
-            , user: {
+            message: "Login successful",
+            token,
+            user: {
                 id: user._id,
                 userName: user.userName,
                 email: user.email,
@@ -55,10 +56,9 @@ const handleRegister = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         await userModel.create({ userName, email, password: hashedPassword, gender, mobile, role })
-        // 🔁 Later we'll hash password here using bcrypt before saving to DB
+
         res.send({ message: "User registered" })
     } catch (error) {
-        console.log("Registration error:", error);
         res.send({ message: "Something went wrong" })
     }
 }
