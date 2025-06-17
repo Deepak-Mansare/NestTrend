@@ -1,7 +1,10 @@
 const orderModel = require("../models/orderSchema")
+const sendEmail = require("../utils/sendEmail")
 
 const createOrder = async (req, res) => {
     const userId = req.user.id
+    const userEmail = req.user.email
+
     const { products, shippingAddress, totalPrice } = req.body
 
     try {
@@ -11,6 +14,13 @@ const createOrder = async (req, res) => {
             shippingAddress,
             totalPrice
         })
+        await sendEmail(
+            userEmail,
+            "Order confirmation - NestTrend",
+            `<h2>Thank you for your order!</h2>
+            <p>We have received your order of ₹${totalPrice}. Our team will process it soon</P>
+            <p>Shpping Address: ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.state}.</p>`
+        )
         res.json({ message: "Order created", order })
     } catch (err) {
         res.json({ message: "Order not created", error: err.message })

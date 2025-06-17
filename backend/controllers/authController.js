@@ -1,6 +1,7 @@
 const userModel = require("../models/userSchema")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const sendEmail = require("../utils/sendEmail")
 
 // 🔁 Will improve all responses with proper HTTP status codes before deployment
 // 🛡️ Will add validation & input sanitization before going live
@@ -20,7 +21,7 @@ const handleLogin = async (req, res) => {
         }
 
         const token = await jwt.sign(
-            { id: user._id, role: user.role },
+            { id: user._id, role: user.role, email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: "24h" })
         res.send({
@@ -56,6 +57,15 @@ const handleRegister = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         await userModel.create({ userName, email, password: hashedPassword, gender, mobile, role })
+
+        await sendEmail(
+            email,
+            "Welcome to NestTrend 👋",
+            `<h2>Hi, ${userName},</h2>
+            <p>Welcome to <strong>NestTrend</strong>! Your account has been successfully created.</p>
+            <p>We're excited to have you on board.</p>
+            <p>Explore our fashion store and enjoy shopping!</p>`
+        )
 
         res.send({ message: "User registered" })
     } catch (error) {
