@@ -23,10 +23,12 @@ function Register() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(registerUser(formData));
-    navigate("/");
+    const res = await dispatch(registerUser(formData));
+    if (res.meta.requestStatus === "fulfilled") {
+      navigate("/login");
+    }
   };
 
   return (
