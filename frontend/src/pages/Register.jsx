@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../features/user/userSlice";
 
 function Register() {
@@ -14,6 +14,7 @@ function Register() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +31,8 @@ function Register() {
       navigate("/login");
     }
   };
+
+  if (user) return <Navigate to="/" />;
 
   return (
     <>

@@ -16,8 +16,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     user: userReducer,
-    cart: cartReducer,
     products: productReducer,
+    cart: cartReducer,
     address: addressReducer,
     orders: orderReducer
 })
