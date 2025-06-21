@@ -28,7 +28,7 @@ function Cart() {
           Looks like you haven't added anything yet.
         </p>
         <Link
-          to="/"
+          to="/products"
           className="bg-indigo-500 text-white px-5 py-2 rounded hover:bg-indigo-600 transition"
         >
           shop Now
@@ -110,7 +110,7 @@ function Cart() {
             CHECKOUT
           </Link>
           <Link
-            to="/"
+            to="/products"
             className="bg-sky-500 text-white text-center py-2 rounded hover:bg-sky-600 transition duration-200"
           >
             SHOP MORE

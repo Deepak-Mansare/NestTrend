@@ -27,13 +27,13 @@ function Login() {
     const res = await dispatch(loginUser(formData));
     if (res.meta.requestStatus === "fulfilled") {
       toast.success("Login successfull");
-      navigate("/");
+      navigate("/products");
     } else {
       toast.error(res.payload || "login failed");
     }
   };
 
-  if (user) return <Navigate to="/" />;
+  if (user) return <Navigate to="/products" />;
 
   return (
     <>

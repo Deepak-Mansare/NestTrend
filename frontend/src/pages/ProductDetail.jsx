@@ -8,6 +8,7 @@ import { addToCart } from "../features/cart/cartSlice";
 function ProductDetail() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
 
   const {
     selectedProduct: product,
@@ -42,6 +43,10 @@ function ProductDetail() {
           <p className="text-gray-700">Description: {product.description}</p>
           <button
             onClick={() => {
+              if (!user) {
+                toast.error("Please login to add items to cart");
+                return;
+              }
               dispatch(addToCart(product));
               toast.success("Product added to cart");
             }}

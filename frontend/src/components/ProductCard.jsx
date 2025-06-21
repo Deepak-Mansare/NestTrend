@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
+import { useSelector } from "react-redux";
 
 function ProductCard({ product }) {
+  const { user } = useSelector((state) => state.user);
+
   const dispatch = useDispatch();
 
   return (
@@ -23,6 +26,10 @@ function ProductCard({ product }) {
 
       <button
         onClick={() => {
+          if (!user) {
+            toast.error("Please login to add items to cart");
+            return;
+          }
           dispatch(addToCart(product));
           toast.success("Product added to cart");
         }}
