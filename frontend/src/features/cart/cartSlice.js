@@ -1,24 +1,43 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    cartItems: [],
-};
+    items: []
+}
 
 const cartSlice = createSlice({
     name: "cart",
     initialState,
     reducers: {
         addToCart: (state, action) => {
-            state.cartItems.push(action.payload);
+            const product = action.payload
+            const existingItem = (state.items || []).find(item => item.product._id === product._id)
+
+            console.log("cart before", JSON.parse(JSON.stringify(state.items)));
+
+            if (existingItem) {
+                existingItem.quantity += 1
+            } else {
+                state.items.push({ product, quantity: 1 })
+            }
+
+            console.log("cart after", JSON.parse(JSON.stringify(state.items)));
         },
         removeFromCart: (state, action) => {
-            state.cartItems = state.cartItems.filter(item => item._id !== action.payload);
+            state.items = state.items.filter(item => item.product._id !== action.payload);
         },
         clearCart: (state) => {
-            state.cartItems = [];
+            state.items = [];
+        },
+        increaseQuantity: (state, action) => {
+            const item = state.items.find(item => item.product._id === action.payload)
+            if (item) item.quantity += 1
+        },
+        decreaseQuantity: (state, action) => {
+            const item = state.items.find(item => item.product._id === action.payload)
+            if (item && item.quantity > 1) item.quantity -= 1
         },
     },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity } = cartSlice.actions;
 export default cartSlice.reducer;

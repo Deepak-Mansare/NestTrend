@@ -1,20 +1,35 @@
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cart/cartSlice";
 
 function ProductCard({ product }) {
+  const dispatch = useDispatch();
+
   return (
-    <div className="border rounded-xl shadow-sm hover:shadow-md transition p-4 bg-white flex flex-col">
-      <Link to={`/product/${product._id}`}>
+    <div className="border rounded-lg shadow-sm hover:shadow-md transition p-4 bg-white w-[240px] mx-auto">
+      <Link to={`/product/${product._id}`} className="block test-center">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-48 object-cover rounded-md mb-4"
+          className="w-full h-44 object-contain mb-2"
         />
-        <h2 className="text-lg font-semibold">{product.name}</h2>
-        <p className="text-sm text-gray-500">{product.brand}</p>
-        <p className="text-md font-bold text-green-600 mt-2">
+        <h2 className="text-base font-semibold">{product.name}</h2>
+        <p className="text-gray-500 text-sm mb-1">{product.brand}</p>
+        <p className="text-green-600 font-bold text-sm mb-2">
           ₹{product.price}
         </p>
       </Link>
+
+      <button
+        onClick={() => {
+          dispatch(addToCart(product));
+          toast.success("Product added to cart");
+        }}
+        className="bg-yellow-600 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700"
+      >
+        Add to Cart
+      </button>
     </div>
   );
 }

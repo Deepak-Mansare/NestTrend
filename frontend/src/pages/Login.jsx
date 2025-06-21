@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { loginUser } from "../features/user/userSlice";
@@ -25,7 +26,10 @@ function Login() {
     e.preventDefault();
     const res = await dispatch(loginUser(formData));
     if (res.meta.requestStatus === "fulfilled") {
+      toast.success("Login successfull");
       navigate("/");
+    } else {
+      toast.error(res.payload || "login failed");
     }
   };
 
