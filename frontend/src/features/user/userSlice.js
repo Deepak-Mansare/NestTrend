@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios"
-import { clearCartCompletely } from "../cart/cartSlice";
+import { clearCartCompletely, clearCartFromBackend } from "../cart/cartSlice";
+import { fetchCartFromBackend } from "../cart/cartSlice";
 
 export const registerUser = createAsyncThunk(
     "user/registerUser",
@@ -29,6 +30,8 @@ export const loginUser = createAsyncThunk(
                 return thunkApi.rejectWithValue(res.data.message || "Login failed")
             }
 
+            localStorage.setItem("token", res.data.token)
+
             return res.data.user
         }
         catch (err) {
@@ -37,9 +40,23 @@ export const loginUser = createAsyncThunk(
     }
 )
 
-export const logoutAndClearCart = () => (dispatch) => {
+export const logoutAndClearCart = () => async (dispatch) => {
     dispatch(logoutUser())
     dispatch(clearCartCompletely())
+    try {
+        await dispatch(clearCartFromBackend())
+    } catch (err) {
+        console.log(err);
+    }
+    window.location.reload()
+}
+
+export const loginUserAndSyncCart = (formData) => async (dispatch) => {
+    const result = await dispatch(loginUser(formData));
+    if (loginUser.fulfilled.match(result)) {
+        await dispatch(fetchCartFromBackend())
+    }
+    return result
 }
 
 const userSlice = createSlice({
@@ -52,6 +69,8 @@ const userSlice = createSlice({
     reducers: {
         logoutUser: (state) => {
             state.user = null
+            localStorage.removeItem("token")
+            localStorage.removeItem("persist:root")
         }
     },
     extraReducers: (builder) => {

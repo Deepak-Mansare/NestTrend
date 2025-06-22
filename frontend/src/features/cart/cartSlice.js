@@ -9,21 +9,26 @@ export const addToCartBackend = createAsyncThunk(
                 "http://localhost:3000/cart/add",
                 {
                     productId: product._id,
-                    quantity: 1
+                    quantity: 1,
                 },
                 {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
-                    withCredentials: true
+                    withCredentials: true,
                 }
-            )
-            return { product, quantity: 1 }
+            );
+
+            return res.data.cart.products.map((item) => {
+                const product = item.productId
+                if (!product || typeof product !== "object") return null
+                return { product, quantity: item.quantity }
+            }).filter(Boolean)
         } catch (err) {
-            return thunkApi.rejectWithValue("Failed to add to cart", err)
+            return thunkApi.rejectWithValue("Failed to add to cart", err);
         }
     }
-)
+);
 
 export const fetchCartFromBackend = createAsyncThunk(
     "cart/fetchCartFromBackend",
@@ -36,13 +41,48 @@ export const fetchCartFromBackend = createAsyncThunk(
                 withCredentials: true
             })
 
-            const products = res.data.products || []
-            return products.map((item) => ({
-                product: item.productId,
-                quantity: item.quantity
-            }))
+            return res.data.products.map((item) => {
+                const product = item.productId
+                if (!product || typeof product !== "object") return null
+                return { product, quantity: item.quantity }
+            }).filter(Boolean)
         } catch (err) {
             return thunkApi.rejectWithValue("Failed to load cart from backend", err)
+        }
+    }
+)
+
+export const clearCartFromBackend = createAsyncThunk(
+    "cart/clearCartFromBackend",
+    async (_, thunkApi) => {
+        try {
+            const res = await axios.delete("http://localhost:3000/cart/clear", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                },
+                withCredentials: true
+            })
+            return true
+        } catch (err) {
+            return thunkApi.rejectWithValue("Failed to clear cart from backend")
+        }
+    }
+)
+
+export const removeFromCartBackend = createAsyncThunk(
+    "cart/removeFromCartBackend",
+    async (productId, thunkApi) => {
+        try {
+            await axios.delete(`http://localhost:3000/cart/remove/${productId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                },
+                withCredentials: true
+            })
+            return productId;
+
+        } catch (err) {
+            return thunkApi.rejectWithValue("Failed to remove product from backend")
         }
     }
 )
@@ -79,15 +119,12 @@ const cartSlice = createSlice({
                 state.items = action.payload
             })
             .addCase(addToCartBackend.fulfilled, (state, action) => {
-                const { product, quantity } = action.payload
-                const existingItem = state.items.find(
-                    (item) => item.product._id === product._id
+                state.items = action.payload
+            })
+            .addCase(removeFromCartBackend.fulfilled, (state, action) => {
+                state.items = state.items.filter(
+                    (item) => item.product._id !== action.payload
                 )
-                if (existingItem) {
-                    existingItem.quantity += quantity
-                } else {
-                    state.items.push({ product, quantity })
-                }
             })
     }
 });

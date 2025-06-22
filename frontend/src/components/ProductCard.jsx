@@ -30,8 +30,13 @@ function ProductCard({ product }) {
             toast.error("Please login to add items to cart");
             return;
           }
-          dispatch(addToCartBackend(product));
-          toast.success("Product added to cart");
+          dispatch(addToCartBackend(product)).then((res) => {
+            if (res.meta.requestStatus === "fulfilled") {
+              toast.success("Product added to cart");
+            } else {
+              toast.error("Failed to add cart");
+            }
+          });
         }}
         className="bg-yellow-600 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700"
       >

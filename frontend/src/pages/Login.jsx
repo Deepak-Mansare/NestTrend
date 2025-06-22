@@ -2,8 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { loginUser } from "../features/user/userSlice";
-import { fetchCartFromBackend } from "../features/cart/cartSlice";
+import { loginUserAndSyncCart } from "../features/user/userSlice";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -25,10 +24,9 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await dispatch(loginUser(formData));
+    const res = await dispatch(loginUserAndSyncCart(formData));
     if (res.meta.requestStatus === "fulfilled") {
       toast.success("Login successfull");
-      dispatch(fetchCartFromBackend());
       navigate("/products");
     } else {
       toast.error(res.payload || "login failed");

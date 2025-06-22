@@ -1,9 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
-  removeFromCart,
   clearCart,
   increaseQuantity,
   decreaseQuantity,
+  clearCartFromBackend,
+  removeFromCartBackend,
 } from "../features/cart/cartSlice";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
@@ -78,8 +79,13 @@ function Cart() {
               </div>
               <button
                 onClick={() => {
-                  dispatch(removeFromCart(product._id));
-                  toast.success("Product removed from cart");
+                  dispatch(removeFromCartBackend(product._id)).then((res) => {
+                    if (res.meta.requestStatus === "fulfilled") {
+                      toast.success("Product removed from cart");
+                    } else {
+                      toast.error("Failed to remove product");
+                    }
+                  });
                 }}
                 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
               >
@@ -117,8 +123,14 @@ function Cart() {
           </Link>
           <button
             onClick={() => {
-              dispatch(clearCart());
-              toast.success("Cart cleared");
+              dispatch(clearCartFromBackend()).then((res) => {
+                if (res.meta.requestStatus === "fulfilled") {
+                  dispatch(clearCart());
+                  toast.success("Cart cleared");
+                } else {
+                  toast.error("Failed to clear cart");
+                }
+              });
             }}
             className="bg-rose-500 text-white py-2 rounded hover:bg-rose-600 transition duration-200"
           >
