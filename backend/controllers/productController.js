@@ -1,9 +1,9 @@
 const productModel = require("../models/productSchema")
 
 const handlecreateProduct = async (req, res) => {
-    const { name, brand, price } = req.body
+    const { name, brand, price, image, description, category } = req.body
     try {
-        const product = await productModel.create({ name, brand, price })
+        const product = await productModel.create({ name, brand, price, image, description, category })
         if (!product) {
             return res.send({ message: "product not added" })
         }
@@ -40,7 +40,7 @@ const handlegetProduct = async (req, res) => {
 
 const handleUpdateProduct = async (req, res) => {
     const id = req.params.id
-    const { name, brand, price } = req.body
+    const { name, brand, price, image, description, category } = req.body
     try {
 
         const existingProduct = await productModel.findById(id)
@@ -51,7 +51,7 @@ const handleUpdateProduct = async (req, res) => {
 
         const updatedProduct = await productModel.findByIdAndUpdate(
             id,
-            { name, brand, price },
+            { name, brand, price, image, description, category },
             { new: true, runValidators: true })
 
         if (!updatedProduct) {

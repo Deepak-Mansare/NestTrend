@@ -12,19 +12,20 @@ const handleLogin = async (req, res) => {
     try {
         const user = await userModel.findOne({ email })
         if (!user) {
-            return res.send({ message: "User not found" })
+            return res.status(404).send({ message: "User not found" })
         }
 
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-            return res.send({ message: "Wrong password" })
+            return res.status(401).send({ message: "Wrong password" })
         }
 
         const token = await jwt.sign(
             { id: user._id, role: user.role, email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: "24h" })
-        res.send({
+
+        return res.status(200).send({
             message: "Login successful",
             token,
             user: {
@@ -37,7 +38,7 @@ const handleLogin = async (req, res) => {
         })
     } catch (error) {
         console.log("Registration error:", error);
-        res.send({ message: "Something went wrong" })
+        res.status(500).send({ message: "Something went wrong" })
     }
 }
 

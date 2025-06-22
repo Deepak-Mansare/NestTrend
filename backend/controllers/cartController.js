@@ -8,14 +8,16 @@ const addToCart = async (req, res) => {
         let cart = await cartModel.findOne({ userId })
 
         if (!cart) {
-            cart = await cartModel.create({
+            cart = new cartModel({
                 userId,
                 products: [{ productId, quantity }]
             })
+            await cart.save()
         }
-
         else {
-            const existingProduct = cart.products.find(p => p.productId.toString() === productId)
+            const existingProduct = cart.products.find(
+                p => p.productId.toString() === productId.toString()
+            )
             if (existingProduct) {
                 existingProduct.quantity += quantity
             } else {
@@ -26,7 +28,7 @@ const addToCart = async (req, res) => {
 
         res.json({ message: "product added to cart", cart })
     } catch (err) {
-        res.json({ message: "Something went wrong" })
+        res.status(500).json({ message: "Something went wrong" })
     }
 }
 
