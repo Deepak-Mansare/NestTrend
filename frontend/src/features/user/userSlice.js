@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios"
+import { clearCartCompletely } from "../cart/cartSlice";
 
 export const registerUser = createAsyncThunk(
     "user/registerUser",
@@ -23,13 +24,23 @@ export const loginUser = createAsyncThunk(
             const res = await axios.post("http://localhost:3000/auth/login", formData, {
                 withCredentials: true
             })
+
+            if (res.status !== 200 || !res.data.user) {
+                return thunkApi.rejectWithValue(res.data.message || "Login failed")
+            }
+
             return res.data.user
         }
         catch (err) {
-            return thunkApi.rejectWithValue(err.response.data.message || "Login failed")
+            return thunkApi.rejectWithValue(err.response?.data?.message || "Login failed")
         }
     }
 )
+
+export const logoutAndClearCart = () => (dispatch) => {
+    dispatch(logoutUser())
+    dispatch(clearCartCompletely())
+}
 
 const userSlice = createSlice({
     name: "user",

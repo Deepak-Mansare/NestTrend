@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../features/cart/cartSlice";
+import { addToCartBackend } from "../features/cart/cartSlice";
 import { useSelector } from "react-redux";
 
 function ProductCard({ product }) {
@@ -30,7 +30,7 @@ function ProductCard({ product }) {
             toast.error("Please login to add items to cart");
             return;
           }
-          dispatch(addToCart(product));
+          dispatch(addToCartBackend(product));
           toast.success("Product added to cart");
         }}
         className="bg-yellow-600 text-white text-sm px-3 py-1 rounded hover:bg-yellow-700"

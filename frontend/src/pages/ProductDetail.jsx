@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getProductById } from "../features/products/productSlice";
-import { addToCart } from "../features/cart/cartSlice";
+import { addToCartBackend } from "../features/cart/cartSlice";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -47,7 +47,7 @@ function ProductDetail() {
                 toast.error("Please login to add items to cart");
                 return;
               }
-              dispatch(addToCart(product));
+              dispatch(addToCartBackend(product));
               toast.success("Product added to cart");
             }}
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-fit"

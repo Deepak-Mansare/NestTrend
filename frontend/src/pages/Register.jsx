@@ -29,7 +29,7 @@ function Register() {
     e.preventDefault();
     const res = await dispatch(registerUser(formData));
     if (res.meta.requestStatus === "fulfilled") {
-      toast.success("Registration successfull, Please login");
+      toast.success("Registered successfully, Please login");
       navigate("/login");
     } else {
       toast.error(res.payload || "Registration failed. Try again");

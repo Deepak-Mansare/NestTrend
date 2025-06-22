@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "../features/user/userSlice";
+import { logoutAndClearCart } from "../features/user/userSlice";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ function Navbar() {
   const cartItems = useSelector((state) => state.cart.cartItems || []);
 
   const handleLogout = () => {
-    dispatch(logoutUser());
+    dispatch(logoutAndClearCart());
     navigate("/login");
   };
 
