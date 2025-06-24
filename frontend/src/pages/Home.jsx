@@ -22,7 +22,7 @@ function Home() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">
-        {category ? `showing ${category} Products` : "All Products"}
+        {category ? `${category}` : "All"}
       </h1>
 
       {loading && <p>Loading Products...</p>}

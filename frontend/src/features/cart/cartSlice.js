@@ -40,13 +40,14 @@ export const fetchCartFromBackend = createAsyncThunk(
                 },
                 withCredentials: true
             })
-
             return res.data.products.map((item) => {
                 const product = item.productId
                 if (!product || typeof product !== "object") return null
                 return { product, quantity: item.quantity }
             }).filter(Boolean)
-        } catch (err) {
+        }
+
+        catch (err) {
             return thunkApi.rejectWithValue("Failed to load cart from backend", err)
         }
     }
@@ -56,7 +57,7 @@ export const clearCartFromBackend = createAsyncThunk(
     "cart/clearCartFromBackend",
     async (_, thunkApi) => {
         try {
-            const res = await axios.delete("http://localhost:3000/cart/clear", {
+            await axios.delete("http://localhost:3000/cart/clear", {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
@@ -64,7 +65,7 @@ export const clearCartFromBackend = createAsyncThunk(
             })
             return true
         } catch (err) {
-            return thunkApi.rejectWithValue("Failed to clear cart from backend")
+            return thunkApi.rejectWithValue("Failed to clear cart from backend", err)
         }
     }
 )
@@ -82,7 +83,7 @@ export const removeFromCartBackend = createAsyncThunk(
             return productId;
 
         } catch (err) {
-            return thunkApi.rejectWithValue("Failed to remove product from backend")
+            return thunkApi.rejectWithValue("Failed to remove product from backend", err)
         }
     }
 )

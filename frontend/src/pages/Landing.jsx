@@ -4,10 +4,10 @@ import bgImg from "../assets/landing-bg.jpg";
 function Landing() {
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center px-4 text-center"
+      className="h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center px-4 text-center overflow-hidden"
       style={{ backgroundImage: `url(${bgImg})` }}
     >
-      <div className="max-w-3xl">
+      <div className="max-w-3xl max-h-full overflow-hidden">
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow">
           Welcome to <span className="text-rose-700 font-bold">NestTrend</span>
         </h1>

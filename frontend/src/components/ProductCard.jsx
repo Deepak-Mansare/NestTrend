@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 
 function ProductCard({ product }) {
   const { user } = useSelector((state) => state.user);
-
   const dispatch = useDispatch();
 
   return (
