@@ -1,34 +1,34 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 export const getAllProducts = createAsyncThunk(
     'products/getAll',
     async (_, { getState, rejectWithValue }) => {
         try {
-            const token = getState().user?.user?.token
-            const headers = token ? { Authorization: `Bearer${token}` } : {}
+            const token = getState().user?.user?.token;
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
             const res = await axios.get("http://localhost:3000/product/getProducts", {
-                headers
-            })
-            return res.data.products
+                headers,
+            });
+            return res.data.products;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to fetch products')
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
         }
     }
-)
+);
 
 export const getProductById = createAsyncThunk(
     "products/getById",
     async (id, { rejectWithValue }) => {
         try {
-            const res = await axios.get(`http://localhost:3000/product/getProduct/${id}`)
-            return res.data.product
+            const res = await axios.get(`http://localhost:3000/product/getProduct/${id}`);
+            return res.data.product;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || "Failed to fetch product")
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch product");
         }
     }
-)
+);
 
 const productSlice = createSlice({
     name: "products",
@@ -39,33 +39,36 @@ const productSlice = createSlice({
         selectedProduct: null,
     },
     reducers: {},
-    extraReducers: builder => {
+    extraReducers: (builder) => {
         builder
-            .addCase(getAllProducts.pending, state => {
-                state.loading = true
-                state.error = null
+            .addCase(getAllProducts.pending, (state) => {
+                state.loading = true;
+                state.error = null;
             })
             .addCase(getAllProducts.fulfilled, (state, action) => {
-                state.loading = false
-                state.items = action.payload
-            }).addCase(getAllProducts.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload
+                state.loading = false;
+                state.items = action.payload;
+            })
+            .addCase(getAllProducts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             })
 
-            .addCase(getProductById.pending, state => {
-                state.loading = true
-                state.error = null
-                state.selectedProduct = null
-            }).addCase(getProductById.fulfilled, (state, action) => {
-                state.loading = false
-                state.selectedProduct = action.payload
-            }).addCase(getProductById.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload
-                state.selectedProduct = null
+            .addCase(getProductById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.selectedProduct = null;
             })
-    }
-})
+            .addCase(getProductById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedProduct = action.payload;
+            })
+            .addCase(getProductById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.selectedProduct = null;
+            });
+    },
+});
 
-export default productSlice.reducer
+export default productSlice.reducer;

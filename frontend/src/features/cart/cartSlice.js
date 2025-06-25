@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios"
+import axios from "axios";
 
 export const addToCartBackend = createAsyncThunk(
     "cart/addToCartBackend",
@@ -19,11 +19,13 @@ export const addToCartBackend = createAsyncThunk(
                 }
             );
 
-            return res.data.cart.products.map((item) => {
-                const product = item.productId
-                if (!product || typeof product !== "object") return null
-                return { product, quantity: item.quantity }
-            }).filter(Boolean)
+            return res.data.cart.products
+                .map((item) => {
+                    const product = item.productId;
+                    if (!product || typeof product !== "object") return null;
+                    return { product, quantity: item.quantity };
+                })
+                .filter(Boolean);
         } catch (err) {
             return thunkApi.rejectWithValue("Failed to add to cart", err);
         }
@@ -36,22 +38,23 @@ export const fetchCartFromBackend = createAsyncThunk(
         try {
             const res = await axios.get("http://localhost:3000/cart", {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                withCredentials: true
-            })
-            return res.data.products.map((item) => {
-                const product = item.productId
-                if (!product || typeof product !== "object") return null
-                return { product, quantity: item.quantity }
-            }).filter(Boolean)
-        }
+                withCredentials: true,
+            });
 
-        catch (err) {
-            return thunkApi.rejectWithValue("Failed to load cart from backend", err)
+            return res.data.products
+                .map((item) => {
+                    const product = item.productId;
+                    if (!product || typeof product !== "object") return null;
+                    return { product, quantity: item.quantity };
+                })
+                .filter(Boolean);
+        } catch (err) {
+            return thunkApi.rejectWithValue("Failed to load cart from backend", err);
         }
     }
-)
+);
 
 export const clearCartFromBackend = createAsyncThunk(
     "cart/clearCartFromBackend",
@@ -59,16 +62,16 @@ export const clearCartFromBackend = createAsyncThunk(
         try {
             await axios.delete("http://localhost:3000/cart/clear", {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                withCredentials: true
-            })
-            return true
+                withCredentials: true,
+            });
+            return true;
         } catch (err) {
-            return thunkApi.rejectWithValue("Failed to clear cart from backend", err)
+            return thunkApi.rejectWithValue("Failed to clear cart from backend", err);
         }
     }
-)
+);
 
 export const removeFromCartBackend = createAsyncThunk(
     "cart/removeFromCartBackend",
@@ -76,59 +79,69 @@ export const removeFromCartBackend = createAsyncThunk(
         try {
             await axios.delete(`http://localhost:3000/cart/remove/${productId}`, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                withCredentials: true
-            })
+                withCredentials: true,
+            });
             return productId;
-
         } catch (err) {
-            return thunkApi.rejectWithValue("Failed to remove product from backend", err)
+            return thunkApi.rejectWithValue("Failed to remove product from backend", err);
         }
     }
-)
-
-const initialState = {
-    items: []
-}
+);
 
 const cartSlice = createSlice({
     name: "cart",
-    initialState,
+    initialState: {
+        items: [],
+    },
     reducers: {
         removeFromCart: (state, action) => {
-            state.items = state.items.filter(item => item.product._id !== action.payload);
+            state.items = state.items.filter(
+                (item) => item.product._id !== action.payload
+            );
         },
         clearCart: (state) => {
             state.items = [];
         },
         increaseQuantity: (state, action) => {
-            const item = state.items.find(item => item.product._id === action.payload)
-            if (item) item.quantity += 1
+            const item = state.items.find(
+                (item) => item.product._id === action.payload
+            );
+            if (item) item.quantity += 1;
         },
         decreaseQuantity: (state, action) => {
-            const item = state.items.find(item => item.product._id === action.payload)
-            if (item && item.quantity > 1) item.quantity -= 1
+            const item = state.items.find(
+                (item) => item.product._id === action.payload
+            );
+            if (item && item.quantity > 1) item.quantity -= 1;
         },
         clearCartCompletely: (state) => {
-            state.items = []
-        }
+            state.items = [];
+        },
     },
     extraReducers: (builder) => {
         builder
             .addCase(fetchCartFromBackend.fulfilled, (state, action) => {
-                state.items = action.payload
+                state.items = action.payload;
             })
             .addCase(addToCartBackend.fulfilled, (state, action) => {
-                state.items = action.payload
+                state.items = action.payload;
             })
             .addCase(removeFromCartBackend.fulfilled, (state, action) => {
                 state.items = state.items.filter(
                     (item) => item.product._id !== action.payload
-                )
-            })
-    }
+                );
+            });
+    },
 });
 
-export const { addToCart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity, clearCartCompletely } = cartSlice.actions;
+export const {
+    removeFromCart,
+    clearCart,
+    increaseQuantity,
+    decreaseQuantity,
+    clearCartCompletely,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;
