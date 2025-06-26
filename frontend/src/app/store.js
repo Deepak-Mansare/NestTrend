@@ -7,6 +7,7 @@ import cartReducer from "../features/cart/cartSlice"
 import productReducer from "../features/products/productSlice"
 import addressReducer from "../features/address/addressSlice"
 import orderReducer from "../features/orders/orderSlice"
+import selectedAddressReducer from "../features/address/selectedAddressSlice"
 
 const persistConfig = {
     key: "root",
@@ -19,7 +20,8 @@ const rootReducer = combineReducers({
     products: productReducer,
     cart: cartReducer,
     address: addressReducer,
-    orders: orderReducer
+    orders: orderReducer,
+    selectedAddress: selectedAddressReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

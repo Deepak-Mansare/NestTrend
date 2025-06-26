@@ -46,10 +46,63 @@ export const getAddresses = createAsyncThunk(
                 withCredentials: true,
             });
 
-            toast.success("Address fetched");
             return res.data.addresses;
         } catch (err) {
             return rejectWithValue(err.response?.data || err.message);
+        }
+    }
+);
+
+export const deleteAddress = createAsyncThunk(
+    "address/delete",
+    async (id, { getState, rejectWithValue }) => {
+        try {
+            const token = getState().user.user?.token;
+
+            if (!token) {
+                return rejectWithValue({ message: "Not authenticated" });
+            }
+
+            await axios.delete(`http://localhost:3000/address/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+
+            toast.success("Address deleted");
+            return id;
+        } catch (err) {
+            const errorPayload = err.response?.data || { message: err.message };
+            toast.error("Failed to add address");
+            return rejectWithValue(errorPayload);
+        }
+    }
+);
+
+export const updateAddress = createAsyncThunk(
+    "address/update",
+    async ({ id, formData }, { getState, rejectWithValue }) => {
+        try {
+            const token = getState().user.user?.token;
+
+            if (!token) {
+                return rejectWithValue({ message: "Not authenticated" });
+            }
+
+            const res = await axios.put(`http://localhost:3000/address/${id}`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+
+            toast.success("Address updated");
+            return res.data.updatedAddress;
+        } catch (err) {
+            const errorPayload = err.response?.data || { message: err.message };
+            toast.error("Failed to update address");
+            return rejectWithValue(errorPayload);
         }
     }
 );
@@ -92,7 +145,18 @@ const addressSlice = createSlice({
             .addCase(getAddresses.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+            .addCase(deleteAddress.fulfilled, (state, action) => {
+                state.addresses = state.addresses.filter((addr) => addr._id !== action.payload)
+            })
+            .addCase(updateAddress.fulfilled, (state, action) => {
+                const updated = action.payload
+                const index = state.addresses.findIndex(addr => addr._id == updated._id)
+                if (index !== -1) {
+                    state.addresses[index] = updated
+                }
+            })
+
     },
 });
 

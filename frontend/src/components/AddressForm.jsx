@@ -1,10 +1,15 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addAddress } from "../features/address/addressSlice";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addAddress,
+  getAddresses,
+  updateAddress,
+} from "../features/address/addressSlice";
 import { toast } from "react-toastify";
 
-function AddressForm() {
+function AddressForm({ editAddress, setEditAddress }) {
   const dispatch = useDispatch();
+  const { addresses } = useSelector((state) => state.address);
 
   const [form, setForm] = useState({
     name: "",
@@ -15,6 +20,19 @@ function AddressForm() {
     street: "",
   });
 
+  useEffect(() => {
+    if (editAddress) {
+      setForm({
+        name: editAddress.name || "",
+        phone: editAddress.phone || "",
+        pincode: editAddress.pincode || "",
+        city: editAddress.city || "",
+        state: editAddress.state || "",
+        street: editAddress.street || "",
+      });
+    }
+  }, [editAddress]);
+
   function handleChange(e) {
     setForm({
       ...form,
@@ -22,25 +40,45 @@ function AddressForm() {
     });
   }
 
-  function handleSubmit(e) {
+  if (!editAddress && addresses.length > 3) {
+    return (
+      <div className="text-red-600 font-medium">
+        You can only save 3 addresses. Delete one to add a new one
+      </div>
+    );
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-
     const isEmpty = Object.values(form).some((val) => val.trim() === "");
-
     if (isEmpty) {
       toast.error("Please fill all the fields");
       return;
     }
 
-    dispatch(addAddress(form));
-    setForm({
-      name: "",
-      phone: "",
-      pincode: "",
-      city: "",
-      state: "",
-      street: "",
-    });
+    try {
+      if (editAddress) {
+        await dispatch(
+          updateAddress({ id: editAddress._id, formData: form })
+        ).unwrap();
+        setEditAddress(null);
+      } else {
+        await dispatch(addAddress(form)).unwrap();
+        toast.success("Addres added");
+      }
+      setForm({
+        name: "",
+        phone: "",
+        pincode: "",
+        city: "",
+        state: "",
+        street: "",
+      });
+      dispatch(getAddresses());
+    } catch (err) {
+      toast.error("Failed to save address", err);
+      console.log(err);
+    }
   }
 
   return (
@@ -48,7 +86,9 @@ function AddressForm() {
       onSubmit={handleSubmit}
       className="bg-white p-4 rounded-lg shadow-md space-y-4 max-w-xl mx-auto"
     >
-      <h2 className="text-xl font-semibold mb-2">Add Delivery Address</h2>
+      <h2 className="text-xl font-semibold mb-2">
+        {editAddress ? "Edit Address" : "Add Delivery Address"}
+      </h2>
 
       <input
         type="text"
@@ -98,12 +138,34 @@ function AddressForm() {
         onChange={handleChange}
         className="w-full border p-2 rounded"
       ></textarea>
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Save Address
-      </button>
+      <div className="flex items-center gap-4">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          {editAddress ? "Update Address" : "Save Address"}
+        </button>
+
+        {editAddress && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditAddress(null);
+              setForm({
+                name: "",
+                phone: "",
+                pincode: "",
+                city: "",
+                state: "",
+                street: "",
+              });
+            }}
+            className="text-gray-600 underline"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 }

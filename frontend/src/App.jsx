@@ -8,17 +8,8 @@ import ProductDetail from "./pages/ProductDetail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
 
 function App() {
-  const user = useSelector((state) => state.user.user);
-
-  useEffect(() => {
-    console.log("🧠 Redux user:", user);
-    console.log("🆔 User ID (should be _id):", user?._id || user?.id);
-  }, [user]);
-
   return (
     <BrowserRouter>
       <Navbar />
