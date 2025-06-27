@@ -18,8 +18,6 @@ export const addAddress = createAsyncThunk(
                 },
                 withCredentials: true,
             });
-
-            toast.success("Address added");
             return res.data.address;
         } catch (err) {
             const errorPayload = err.response?.data || { message: err.message };

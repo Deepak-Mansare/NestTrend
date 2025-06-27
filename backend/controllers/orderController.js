@@ -1,90 +1,94 @@
-const orderModel = require("../models/orderSchema")
-const sendEmail = require("../utils/sendEmail")
+const orderModel = require("../models/orderSchema");
 
 const createOrder = async (req, res) => {
-    const userId = req.user.id
-    const userEmail = req.user.email
-
-    const { products, shippingAddress, totalPrice } = req.body
+    const userId = req.user.id;
+    const { products, shippingAddress, totalPrice } = req.body;
 
     try {
         const order = await orderModel.create({
             userId,
             products,
             shippingAddress,
-            totalPrice
-        })
-        await sendEmail(
-            userEmail,
-            "Order confirmation - NestTrend",
-            `<h2>Thank you for your order!</h2>
-            <p>We have received your order of ₹${totalPrice}. Our team will process it soon</P>
-            <p>Shpping Address: ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.state}.</p>`
-        )
-        res.json({ message: "Order created", order })
+            totalPrice,
+            orderStatus: "pending",
+            paymentStatus: "unpaid",
+        });
+
+        res.status(201).json({ message: "Order created", order });
     } catch (err) {
-        res.json({ message: "Order not created", error: err.message })
+        res.status(500).json({ message: "Order not created", error: err.message });
     }
-}
+};
 
 const fetchUserOrders = async (req, res) => {
-    const userId = req.user.id
-
+    const userId = req.user.id;
     try {
-        const orders = await orderModel.find({ userId })
+        const orders = await orderModel
+            .find({ userId })
             .populate("products.productId")
-            .populate("shippingAddress")
-        res.json({ message: "Your orders", orders })
+            .populate("shippingAddress");
+
+        res.status(200).json({ message: "Your orders", orders });
     } catch (err) {
-        res.json({ message: "Failed to fetch orders", error: err.message })
+        res.status(500).json({ message: "Failed to fetch orders", error: err.message });
     }
-}
+};
 
 const fetchUserOrder = async (req, res) => {
-    const userId = req.user.id
-    const orderId = req.params.id
+    const userId = req.user.id;
+    const orderId = req.params.id;
 
     try {
-        const order = await orderModel.findOne({ _id: orderId, userId })
+        const order = await orderModel
+            .findOne({ _id: orderId, userId })
             .populate("products.productId")
-            .populate("shippingAddress")
+            .populate("shippingAddress");
 
         if (!order) {
-            return res.json({ message: "Order not found" })
+            return res.status(404).json({ message: "Order not found" });
         }
 
-        res.json({ message: "Order found", order })
+        res.status(200).json({ message: "Order found", order });
     } catch (err) {
-        res.json({ message: "Error fetching order", error: err.message })
+        res.status(500).json({ message: "Error fetching order", error: err.message });
     }
-}
+};
 
 const fetchAdminOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find()
+        const orders = await orderModel
+            .find()
             .populate("userId")
             .populate("products.productId")
-            .populate("shippingAddress")
-        res.json({ message: "All orders", orders })
+            .populate("shippingAddress");
+
+        res.status(200).json({ message: "All orders", orders });
     } catch (err) {
-        res.json({ message: "Failed to fetch all orders", error: err.message })
+        res.status(500).json({ message: "Failed to fetch all orders", error: err.message });
     }
-}
+};
 
 const deleteOrder = async (req, res) => {
-    const orderId = req.params.id
+    const orderId = req.params.id;
+    const userId = req.user.id;
 
     try {
-        const deleteOrder = await orderModel.findByIdAndDelete(orderId)
+        const order = await orderModel.findOneAndDelete({ _id: orderId, userId });
 
-        if (!deleteOrder) {
-            return res.json({ message: "Order not found" })
+        if (!order) {
+            return res.status(404).json({ message: "Order not found or unauthorized" });
         }
 
-        res.json({ message: "Order deleted" })
+        res.status(200).json({ message: "Order deleted" });
     } catch (err) {
-        res.json({ message: "Error deleting order", error: err.message })
+        res.status(500).json({ message: "Error deleting order", error: err.message });
     }
-}
+};
 
-module.exports = { createOrder, fetchUserOrders, fetchUserOrder, fetchAdminOrders, deleteOrder }
+module.exports = {
+    createOrder,
+    fetchUserOrders,
+    fetchUserOrder,
+    fetchAdminOrders,
+    deleteOrder,
+};

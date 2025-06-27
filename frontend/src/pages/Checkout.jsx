@@ -10,19 +10,25 @@ import { placeOrder } from "../features/orders/orderSlice";
 import { clearCart } from "../features/cart/cartSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Checkout() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { addresses, loading } = useSelector((state) => state.address);
   const user = useSelector((state) => state.user.user);
   const selectedAddressId = useSelector((state) => state.selectedAddress.id);
+  const cartItems = useSelector((state) => state.cart.items);
+
   const [editAddress, setEditAddress] = useState(null);
-  const cartItems = useSelector((state) => state.cart.cart);
 
   useEffect(() => {
     if (user?.token) {
-      dispatch(getAddresses());
-      dispatch(loadSelectedAddressFromStorage());
+      dispatch(getAddresses()).then((res) => {
+        const ids = res.payload?.map((addr) => addr._id) || [];
+        dispatch(loadSelectedAddressFromStorage(ids));
+      });
     }
   }, [user?.token, dispatch]);
 
@@ -42,10 +48,48 @@ function Checkout() {
       return;
     }
 
+    const selectedAddressObj = addresses.find(
+      (addr) => addr._id === selectedAddressId
+    );
+    if (!selectedAddressObj) {
+      toast.error("Selected address is no longer valid");
+      return;
+    }
+
+    if (!cartItems || cartItems.length === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
+
+    const totalPrice = cartItems.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    );
+    const discount = totalPrice * 0.1;
+    const grandTotal = totalPrice - discount;
+
+    const payload = {
+      products: cartItems.map((item) => ({
+        productId: item.product._id,
+        quantity: item.quantity,
+      })),
+      addressId: selectedAddressId,
+      grandTotal,
+      token: user.token,
+    };
+
     try {
+      const res = await dispatch(placeOrder(payload));
+      const appOrderId = res.payload?._id;
+
+      if (!appOrderId) {
+        toast.error("Order placement failed");
+        return;
+      }
+
       const { data } = await axios.post(
         "http://localhost:3000/payment/create-order",
-        { amount: 100 },
+        { amount: grandTotal },
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -54,9 +98,8 @@ function Checkout() {
       );
 
       const order = data.order;
-
       if (!order) {
-        toast.error("Failed to create order");
+        toast.error("Failed to create Razorpay order");
         return;
       }
 
@@ -68,58 +111,48 @@ function Checkout() {
         description: "Order Payment",
         order_id: order.id,
         handler: async function (response) {
-          const verifyRes = await axios.post(
-            "http://localhost:3000/payment/verify",
-            {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              amount: order.amount / 100,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${user.token}`,
+          try {
+            const verifyRes = await axios.post(
+              "http://localhost:3000/payment/verify",
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                amount: order.amount / 100,
+                appOrderId,
               },
-            }
-          );
-
-          if (verifyRes.data.success) {
-            toast.success("Payment Successful ✅");
-
-            dispatch(
-              placeOrder({
-                products: cartItems.map((items) => ({
-                  productId: items.product._id,
-                  quantity: items.quantity,
-                })),
-                addressId: selectedAddressId,
-                totalPrice: cartItems.reduce(
-                  (total, item) => total + item.product.price * item.quantity,
-                  0
-                ),
-                token: user.token,
-              })
+              {
+                headers: {
+                  Authorization: `Bearer ${user.token}`,
+                },
+              }
             );
 
-            dispatch(clearCart());
-          } else {
-            toast.error("Payment verification failed ❌");
+            if (verifyRes.data.success) {
+              toast.success("Payment Successful");
+              dispatch(clearCart());
+              navigate("/orders");
+            } else {
+              toast.error("Payment verification failed");
+            }
+          } catch (err) {
+            toast.error("Error verifying payment");
           }
         },
-
         prefill: {
           name: user?.name || "NestTrend User",
-          email: user?.email || "abc@gmail.com",
+          email: user?.email || "user@example.com",
+          contact: user?.phone || "9000000000",
         },
         theme: {
           color: "#10b981",
         },
       };
+
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
       toast.error("Payment Failed");
-      console.log(err);
     }
   };
 
@@ -166,7 +199,7 @@ function Checkout() {
                     }}
                     className="text-blue-500 hover:underline"
                   >
-                    ✎ Edit
+                    Edit
                   </button>
                   <button
                     onClick={(e) => {
@@ -175,7 +208,7 @@ function Checkout() {
                     }}
                     className="text-red-500 hover:text-red-700"
                   >
-                    ✕
+                    Delete
                   </button>
                 </div>
               </label>
@@ -193,4 +226,5 @@ function Checkout() {
     </div>
   );
 }
+
 export default Checkout;

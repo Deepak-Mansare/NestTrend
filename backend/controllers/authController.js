@@ -1,31 +1,30 @@
-const userModel = require("../models/userSchema")
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
-const sendEmail = require("../utils/sendEmail")
+const userModel = require("../models/userSchema");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const sendEmail = require("../utils/sendEmail");
 
-// 🔁 Will improve all responses with proper HTTP status codes before deployment
-// 🛡️ Will add validation & input sanitization before going live
-
-// Login route
+// 🔐 POST /auth/login
 const handleLogin = async (req, res) => {
-    const { email, password } = req.body
+    const { email, password } = req.body;
+
     try {
-        const user = await userModel.findOne({ email })
+        const user = await userModel.findOne({ email });
         if (!user) {
-            return res.status(404).send({ message: "User not found" })
+            return res.status(404).json({ message: "User not found" });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password)
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).send({ message: "Wrong password" })
+            return res.status(401).json({ message: "Incorrect password" });
         }
 
-        const token = await jwt.sign(
+        const token = jwt.sign(
             { id: user._id, role: user.role, email: user.email },
             process.env.JWT_SECRET,
-            { expiresIn: "24h" })
+            { expiresIn: "24h" }
+        );
 
-        return res.status(200).send({
+        res.status(200).json({
             message: "Login successful",
             token,
             user: {
@@ -35,29 +34,37 @@ const handleLogin = async (req, res) => {
                 gender: user.gender,
                 role: user.role
             }
-        })
-    } catch (error) {
-        console.log("Registration error:", error);
-        res.status(500).send({ message: "Something went wrong" })
+        });
+    } catch (err) {
+        console.error("Login error:", err.message);
+        res.status(500).json({ message: "Something went wrong" });
     }
-}
+};
 
-// Register route
+// 📝 POST /auth/register
 const handleRegister = async (req, res) => {
-    const { userName, email, password, gender, mobile, role } = req.body
-    if (!userName || !email || !password || !gender || !mobile) {
-        return res.status(400).json({ message: "All fields are required" })
-    }
-    try {
-        const existingUser = await userModel.findOne({ email })
+    const { userName, email, password, gender, mobile, role } = req.body;
 
+    if (!userName || !email || !password || !gender || !mobile) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        const existingUser = await userModel.findOne({ email });
         if (existingUser) {
-            return res.send({ message: "This email is already registered" })
+            return res.status(409).json({ message: "This email is already registered" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        await userModel.create({ userName, email, password: hashedPassword, gender, mobile, role })
+        await userModel.create({
+            userName,
+            email,
+            password: hashedPassword,
+            gender,
+            mobile,
+            role
+        });
 
         await sendEmail(
             email,
@@ -66,12 +73,16 @@ const handleRegister = async (req, res) => {
             <p>Welcome to <strong>NestTrend</strong>! Your account has been successfully created.</p>
             <p>We're excited to have you on board.</p>
             <p>Explore our fashion store and enjoy shopping!</p>`
-        )
+        );
 
-        res.send({ message: "User registered" })
-    } catch (error) {
-        res.send({ message: "Something went wrong" })
+        res.status(201).json({ message: "User registered successfully" });
+    } catch (err) {
+        console.error("Registration error:", err.message);
+        res.status(500).json({ message: "Something went wrong" });
     }
-}
+};
 
-module.exports = { handleLogin, handleRegister }
+module.exports = {
+    handleLogin,
+    handleRegister,
+};

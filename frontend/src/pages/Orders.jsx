@@ -17,7 +17,20 @@ function Orders() {
       setOrders(data.orders);
     } catch (err) {
       toast.error("Failed to load orders");
-      console.log(err);
+    }
+  };
+
+  const deleteOrder = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/order/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      toast.success("Order deleted");
+      fetchOrders();
+    } catch (err) {
+      toast.error("Failed to delete order");
     }
   };
 
@@ -38,28 +51,26 @@ function Orders() {
         {orders.map((order) => (
           <div key={order._id} className="border rounded p-4">
             <p className="text-gray-700 mb-2">
-              <strong>Order ID:</strong>
-              {order._id}
+              <strong>Order ID:</strong> {order._id}
             </p>
             <p>
               <strong>Status:</strong> {order.orderStatus}{" "}
               <strong>Payment:</strong> {order.paymentStatus}
             </p>
             <p>
-              <strong>Total:</strong>₹{order.totalPrice.toLocaleString("en-IN")}
+              <strong>Total:</strong> ₹
+              {order.totalPrice.toLocaleString("en-IN")}
             </p>
             <p>
-              <strong>Date:</strong>
+              <strong>Date:</strong>{" "}
               {new Date(order.createdAt).toLocaleString()}
             </p>
             {order.shippingAddress && (
               <p className="mt-2 text-sm text-gray-600">
-                <strong>Shipping:</strong>
-                {order.shippingAddress?.street},{order.shippingAddress?.city},
-                {order.shippingAddress?.state},
+                <strong>Shipping:</strong> {order.shippingAddress.street},{" "}
+                {order.shippingAddress.city}, {order.shippingAddress.state}
               </p>
             )}
-
             <div className="mt-4 space-y-2">
               {order.products.map((p) => (
                 <div
@@ -73,10 +84,17 @@ function Orders() {
                 </div>
               ))}
             </div>
+            <button
+              onClick={() => deleteOrder(order._id)}
+              className="mt-4 bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+            >
+              Delete Order
+            </button>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
 export default Orders;
