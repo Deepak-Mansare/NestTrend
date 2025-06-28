@@ -17,6 +17,7 @@ function Orders() {
       setOrders(data.orders);
     } catch (err) {
       toast.error("Failed to load orders");
+      console.log(err);
     }
   };
 
@@ -31,6 +32,7 @@ function Orders() {
       fetchOrders();
     } catch (err) {
       toast.error("Failed to delete order");
+      console.log(err);
     }
   };
 
@@ -48,8 +50,11 @@ function Orders() {
     <div className="max-w-5xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Your Orders</h1>
       <div className="space-y-6">
-        {orders.map((order) => (
-          <div key={order._id} className="border rounded p-4">
+        {[...orders].reverse().map((order) => (
+          <div
+            key={order._id}
+            className="border rounded-lg p-5 shadow-sm bg-white"
+          >
             <p className="text-gray-700 mb-2">
               <strong>Order ID:</strong> {order._id}
             </p>
