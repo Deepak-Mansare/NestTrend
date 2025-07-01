@@ -137,6 +137,7 @@ function Checkout() {
             }
           } catch (err) {
             toast.error("Error verifying payment");
+            console.log(err);
           }
         },
         prefill: {
@@ -153,6 +154,7 @@ function Checkout() {
       rzp.open();
     } catch (err) {
       toast.error("Payment Failed");
+      console.log(err);
     }
   };
 
@@ -174,30 +176,35 @@ function Checkout() {
             {addresses.map((addr) => (
               <label
                 key={addr._id}
-                className={`block border p-3 rounded cursor-pointer relative ${
+                className={`block border p-4 pr-24 rounded relative cursor-pointer ${
                   selectedAddressId === addr._id ? "border-blue-500" : ""
                 }`}
               >
-                <input
-                  type="radio"
-                  name="selectedAddress"
-                  checked={selectedAddressId === addr._id}
-                  onChange={() => handleSelect(addr._id)}
-                  className="mr-2"
-                />
-                <span>
-                  <strong>{addr.name}</strong>,{" "}
-                  {addr.addressLine || addr.street}, {addr.city}, {addr.state} –{" "}
-                  {addr.pincode}, ph: {addr.phone}
-                </span>
+                <div className="flex items-start gap-2">
+                  <input
+                    type="radio"
+                    name="selectedAddress"
+                    checked={selectedAddressId === addr._id}
+                    onChange={() => handleSelect(addr._id)}
+                    className="mt-1"
+                  />
+                  <div className="space-y-1 text-sm">
+                    <div className="font-medium">{addr.name}</div>
+                    <div>{addr.street || addr.addressLine}</div>
+                    <div>
+                      {addr.city}, {addr.state} – {addr.pincode}
+                    </div>
+                    <div className="text-gray-600">Ph: {addr.phone}</div>
+                  </div>
+                </div>
 
-                <div className="absolute top-2 right-2 flex space-x-2">
+                <div className="absolute top-2 right-2 flex gap-2">
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       setEditAddress(addr);
                     }}
-                    className="text-blue-500 hover:underline"
+                    className="text-blue-600 hover:underline"
                   >
                     Edit
                   </button>

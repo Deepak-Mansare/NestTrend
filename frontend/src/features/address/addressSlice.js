@@ -16,7 +16,6 @@ export const addAddress = createAsyncThunk(
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                withCredentials: true,
             });
             return res.data.address;
         } catch (err) {
@@ -41,7 +40,6 @@ export const getAddresses = createAsyncThunk(
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                withCredentials: true,
             });
 
             return res.data.addresses;
@@ -65,14 +63,13 @@ export const deleteAddress = createAsyncThunk(
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                withCredentials: true,
             });
 
             toast.success("Address deleted");
             return id;
         } catch (err) {
             const errorPayload = err.response?.data || { message: err.message };
-            toast.error("Failed to add address");
+            toast.error("Failed to delete address");
             return rejectWithValue(errorPayload);
         }
     }
@@ -92,7 +89,6 @@ export const updateAddress = createAsyncThunk(
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                withCredentials: true,
             });
 
             toast.success("Address updated");
@@ -132,6 +128,7 @@ const addressSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
             .addCase(getAddresses.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -144,17 +141,18 @@ const addressSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
             .addCase(deleteAddress.fulfilled, (state, action) => {
-                state.addresses = state.addresses.filter((addr) => addr._id !== action.payload)
-            })
-            .addCase(updateAddress.fulfilled, (state, action) => {
-                const updated = action.payload
-                const index = state.addresses.findIndex(addr => addr._id == updated._id)
-                if (index !== -1) {
-                    state.addresses[index] = updated
-                }
+                state.addresses = state.addresses.filter((addr) => addr._id !== action.payload);
             })
 
+            .addCase(updateAddress.fulfilled, (state, action) => {
+                const updated = action.payload;
+                const index = state.addresses.findIndex((addr) => addr._id === updated._id);
+                if (index !== -1) {
+                    state.addresses[index] = updated;
+                }
+            });
     },
 });
 

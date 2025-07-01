@@ -4,7 +4,6 @@ const paymentModel = require("../models/paymentSchema");
 const orderModel = require("../models/orderSchema");
 const cartModel = require("../models/cartSchema");
 const sendEmail = require("../utils/sendEmail");
-const addressModel = require("../models/addressSchema");
 
 const createPaymentOrder = async (req, res) => {
     let { amount } = req.body;
@@ -63,13 +62,13 @@ const verifyPayment = async (req, res) => {
             signature: razorpay_signature,
             amount,
             status: "success",
-        });
+        })
 
         const order = await orderModel.findByIdAndUpdate(
             appOrderId,
             {
-                orderStatus: "confirmed",
-                paymentStatus: "paid",
+                orderStatus: "Confirmed",
+                paymentStatus: "Paid",
             },
             { new: true }
         ).populate("shippingAddress");
@@ -85,8 +84,8 @@ const verifyPayment = async (req, res) => {
                 "Order confirmation - NestTrend",
                 `<h2>Thank you for your order!</h2>
                 <p>Your payment of ₹${order.totalPrice.toLocaleString("en-IN")} has been received successfully.</p>
-                <p><strong>Shipping Address:</strong><br>${addressString}</p>
-                <p>We’ll notify you once your order is shipped.</p>`
+                <p><strong>Shipping Address: </strong><br>${addressString}</p>
+                <p>We'll notify you once your order is shipped.</p>`
             );
         }
 

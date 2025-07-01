@@ -7,13 +7,11 @@ export const registerUser = createAsyncThunk(
     "user/registerUser",
     async (formData, thunkApi) => {
         try {
-            const res = await axios.post("http://localhost:3000/auth/register", formData, {
-                withCredentials: true
-            })
-            return res.data.user
+            const res = await axios.post("http://localhost:3000/auth/register", formData);
+            return res.data.user;
         }
         catch (err) {
-            return thunkApi.rejectWithValue(err.response.data.message || "Register failed")
+            return thunkApi.rejectWithValue(err.response.data.message || "Register failed");
         }
     }
 )
@@ -22,41 +20,39 @@ export const loginUser = createAsyncThunk(
     "user/loginUser",
     async (formData, thunkApi) => {
         try {
-            const res = await axios.post("http://localhost:3000/auth/login", formData, {
-                withCredentials: true
-            })
+            const res = await axios.post("http://localhost:3000/auth/login", formData);
 
             if (res.status !== 200 || !res.data.user) {
-                return thunkApi.rejectWithValue(res.data.message || "Login failed")
+                return thunkApi.rejectWithValue(res.data.message || "Login failed");
             }
 
-            localStorage.setItem("token", res.data.token)
+            localStorage.setItem("token", res.data.token);
 
-            return res.data.user
+            return res.data.user;
         }
         catch (err) {
-            return thunkApi.rejectWithValue(err.response?.data?.message || "Login failed")
+            return thunkApi.rejectWithValue(err.response?.data?.message || "Login failed");
         }
     }
 )
 
 export const logoutAndClearCart = () => async (dispatch) => {
-    dispatch(logoutUser())
-    dispatch(clearCartCompletely())
+    dispatch(logoutUser());
+    dispatch(clearCartCompletely());
     try {
-        await dispatch(clearCartFromBackend())
+        await dispatch(clearCartFromBackend());
     } catch (err) {
         console.log(err);
     }
-    window.location.reload()
+    window.location.reload();
 }
 
 export const loginUserAndSyncCart = (formData) => async (dispatch) => {
     const result = await dispatch(loginUser(formData));
     if (loginUser.fulfilled.match(result)) {
-        await dispatch(fetchCartFromBackend())
+        await dispatch(fetchCartFromBackend());
     }
-    return result
+    return result;
 }
 
 const userSlice = createSlice({
@@ -68,43 +64,41 @@ const userSlice = createSlice({
     },
     reducers: {
         logoutUser: (state) => {
-            state.user = null
-            localStorage.removeItem("token")
-            localStorage.removeItem("persist:root")
+            state.user = null;
+            localStorage.removeItem("token");
+            localStorage.removeItem("persist:root");
         }
     },
     extraReducers: (builder) => {
         builder
-            // Register
             .addCase(registerUser.pending, (state) => {
-                state.loading = true
-                state.error = null
+                state.loading = true;
+                state.error = null;
             })
             .addCase(registerUser.fulfilled, (state, action) => {
-                state.loading = false
-                state.user = action.payload
+                state.loading = false;
+                state.user = action.payload;
             })
             .addCase(registerUser.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload
+                state.loading = false;
+                state.error = action.payload;
             })
 
-            // Login
             .addCase(loginUser.pending, (state) => {
-                state.loading = true
-                state.error = null
+                state.loading = true;
+                state.error = null;
             })
             .addCase(loginUser.fulfilled, (state, action) => {
-                state.loading = false
+                state.loading = false;
                 state.user = {
                     ...action.payload,
                     token: localStorage.getItem("token")
-                }
+                };
             })
             .addCase(loginUser.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload
-            })
+                state.loading = false;
+                state.error = action.payload;
+            });
     }
 });
 

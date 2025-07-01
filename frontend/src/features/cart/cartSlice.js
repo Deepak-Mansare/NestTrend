@@ -15,7 +15,6 @@ export const addToCartBackend = createAsyncThunk(
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
-                    withCredentials: true,
                 }
             );
 
@@ -40,7 +39,6 @@ export const fetchCartFromBackend = createAsyncThunk(
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                withCredentials: true,
             });
 
             return res.data.products
@@ -64,7 +62,6 @@ export const clearCartFromBackend = createAsyncThunk(
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                withCredentials: true,
             });
             return true;
         } catch (err) {
@@ -81,7 +78,6 @@ export const removeFromCartBackend = createAsyncThunk(
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                withCredentials: true,
             });
             return productId;
         } catch (err) {

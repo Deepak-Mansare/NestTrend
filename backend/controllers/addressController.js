@@ -1,6 +1,6 @@
 const addressModel = require("../models/addressSchema");
 
-// ➕ POST /address/add
+//  POST /address/add
 const addAddress = async (req, res) => {
     const userId = req.user._id;
     const data = req.body;
@@ -13,7 +13,7 @@ const addAddress = async (req, res) => {
     }
 };
 
-// 📦 GET /address/
+//  GET /address/
 const getAddresses = async (req, res) => {
     const userId = req.user._id;
 
@@ -25,7 +25,7 @@ const getAddresses = async (req, res) => {
     }
 };
 
-// ✏️ PUT /address/update/:id
+//  PUT /address/update/:id
 const updateAddress = async (req, res) => {
     const userId = req.user._id;
     const addressId = req.params.id;
@@ -48,7 +48,7 @@ const updateAddress = async (req, res) => {
     }
 };
 
-// 🗑️ DELETE /address/delete/:id
+//  DELETE /address/delete/:id
 const deleteAddress = async (req, res) => {
     const userId = req.user._id;
     const addressId = req.params.id;

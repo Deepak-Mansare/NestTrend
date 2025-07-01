@@ -60,7 +60,6 @@ const updateCartItem = async (req, res) => {
 
     try {
         const cart = await cartModel.findOne({ userId });
-
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
         }

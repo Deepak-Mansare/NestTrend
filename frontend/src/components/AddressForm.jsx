@@ -64,8 +64,9 @@ function AddressForm({ editAddress, setEditAddress }) {
         setEditAddress(null);
       } else {
         await dispatch(addAddress(form)).unwrap();
-        toast.success("Addres added");
+        toast.success("Address added");
       }
+
       setForm({
         name: "",
         phone: "",
@@ -74,9 +75,10 @@ function AddressForm({ editAddress, setEditAddress }) {
         state: "",
         street: "",
       });
+
       dispatch(getAddresses());
     } catch (err) {
-      toast.error("Failed to save address", err);
+      toast.error("Failed to save address");
       console.log(err);
     }
   }
@@ -84,52 +86,55 @@ function AddressForm({ editAddress, setEditAddress }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-4 rounded-lg shadow-md space-y-4 max-w-xl mx-auto"
+      className="bg-white p-6 rounded-lg shadow-md space-y-4 max-w-xl mx-auto border"
     >
-      <h2 className="text-xl font-semibold mb-2">
+      <h2 className="text-xl font-semibold">
         {editAddress ? "Edit Address" : "Add Delivery Address"}
       </h2>
 
-      <input
-        type="text"
-        name="name"
-        placeholder="Full Name"
-        value={form.name}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
-      <input
-        type="text"
-        name="phone"
-        placeholder="Phone"
-        value={form.phone}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
-      <input
-        type="text"
-        name="pincode"
-        placeholder="Pincode"
-        value={form.pincode}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
-      <input
-        type="text"
-        name="city"
-        placeholder="City"
-        value={form.city}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
-      <input
-        type="text"
-        name="state"
-        placeholder="State"
-        value={form.state}
-        onChange={handleChange}
-        className="w-full border p-2 rounded"
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={form.name}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+        />
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone"
+          value={form.phone}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+        />
+        <input
+          type="text"
+          name="pincode"
+          placeholder="Pincode"
+          value={form.pincode}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+        />
+        <input
+          type="text"
+          name="city"
+          placeholder="City"
+          value={form.city}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+        />
+        <input
+          type="text"
+          name="state"
+          placeholder="State"
+          value={form.state}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+        />
+      </div>
+
       <textarea
         name="street"
         placeholder="Street / Full Address"
@@ -138,6 +143,7 @@ function AddressForm({ editAddress, setEditAddress }) {
         onChange={handleChange}
         className="w-full border p-2 rounded"
       ></textarea>
+
       <div className="flex items-center gap-4">
         <button
           type="submit"

@@ -17,7 +17,7 @@ const handlegetProducts = async (req, res) => {
     try {
         const products = await productModel.find();
         if (!products || products.length === 0) {
-            return res.status(404).json({ message: "No products found" });
+            return res.status(404).json({ message: "No product found" });
         }
         res.status(200).json({ message: "Success", products });
     } catch (err) {
