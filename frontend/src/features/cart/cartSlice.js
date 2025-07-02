@@ -139,14 +139,12 @@ const cartSlice = createSlice({
                 state.items = state.items.filter(
                     (item) => item.product._id !== action.payload
                 );
-            });
+            })
     },
 });
 
 export const {
-    removeFromCart,
     clearCart,
-    clearCartCompletely,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutAndClearCart } from "../features/user/userSlice";
+import { logoutUser } from "../features/user/userSlice";
+import { clearCart } from "../features/cart/cartSlice";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
@@ -13,7 +14,8 @@ function Navbar() {
   const cartItems = useSelector((state) => state.cart.items || []);
 
   const handleLogout = () => {
-    dispatch(logoutAndClearCart());
+    dispatch(logoutUser());
+    dispatch(clearCart());
     navigate("/login");
   };
 
@@ -27,7 +29,7 @@ function Navbar() {
           NestTrend
         </Link>
 
-        {/* Hamburger (Mobile Only) */}
+        {/* Hamburger */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="md:hidden focus:outline-none"
@@ -35,7 +37,7 @@ function Navbar() {
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        {/* Desktop Links */}
+        {/* Desktop Category Links */}
         <div className="hidden md:flex gap-6 text-sm font-medium items-center">
           <Link to="/category/men" className="hover:text-yellow-300">
             Men

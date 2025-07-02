@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios"
-import { clearCartCompletely, clearCartFromBackend } from "../cart/cartSlice";
 import { fetchCartFromBackend } from "../cart/cartSlice";
 
 export const registerUser = createAsyncThunk(
@@ -35,17 +34,6 @@ export const loginUser = createAsyncThunk(
         }
     }
 )
-
-export const logoutAndClearCart = () => async (dispatch) => {
-    dispatch(logoutUser());
-    dispatch(clearCartCompletely());
-    try {
-        await dispatch(clearCartFromBackend());
-    } catch (err) {
-        console.log(err);
-    }
-    window.location.reload();
-}
 
 export const loginUserAndSyncCart = (formData) => async (dispatch) => {
     const result = await dispatch(loginUser(formData));
@@ -97,7 +85,7 @@ const userSlice = createSlice({
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
     }
 });
 
