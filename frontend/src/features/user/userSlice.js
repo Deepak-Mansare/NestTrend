@@ -8,7 +8,7 @@ export const registerUser = createAsyncThunk(
     async (formData, thunkApi) => {
         try {
             const res = await axios.post("http://localhost:3000/auth/register", formData);
-            return res.data.user;
+            return res.data.message;
         }
         catch (err) {
             return thunkApi.rejectWithValue(err.response.data.message || "Register failed");
@@ -75,9 +75,8 @@ const userSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(registerUser.fulfilled, (state, action) => {
+            .addCase(registerUser.fulfilled, (state) => {
                 state.loading = false;
-                state.user = action.payload;
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;

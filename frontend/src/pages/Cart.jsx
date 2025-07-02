@@ -1,8 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
   clearCart,
-  increaseQuantity,
-  decreaseQuantity,
+  updateCartQuantityBackend,
   clearCartFromBackend,
   removeFromCartBackend,
 } from "../features/cart/cartSlice";
@@ -61,7 +60,17 @@ function Cart() {
                   <p className="text-sm text-gray-600">₹{product.price}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <button
-                      onClick={() => dispatch(decreaseQuantity(product._id))}
+                      onClick={() => {
+                        const newQty = quantity - 1;
+                        if (newQty >= 1) {
+                          dispatch(
+                            updateCartQuantityBackend({
+                              productId: product._id,
+                              quantity: newQty,
+                            })
+                          );
+                        }
+                      }}
                       className="px-2 py-1 bg-gray-200 text-gray-700 rounded disabled:opacity-50"
                       disabled={quantity === 1}
                     >
@@ -69,7 +78,14 @@ function Cart() {
                     </button>
                     <span className="text-sm">{quantity}</span>
                     <button
-                      onClick={() => dispatch(increaseQuantity(product._id))}
+                      onClick={() =>
+                        dispatch(
+                          updateCartQuantityBackend({
+                            productId: product._id,
+                            quantity: quantity + 1,
+                          })
+                        )
+                      }
                       className="px-2 py-1 bg-gray-200 text-gray-700 rounded"
                     >
                       +

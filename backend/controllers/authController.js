@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/sendEmail");
 
-// 🔐 POST /auth/login
+//  POST /auth/login
 const handleLogin = async (req, res) => {
     const { email, password } = req.body;
 
@@ -41,7 +41,7 @@ const handleLogin = async (req, res) => {
     }
 };
 
-// 📝 POST /auth/register
+//  POST /auth/register
 const handleRegister = async (req, res) => {
     const { userName, email, password, gender, mobile, role } = req.body;
 

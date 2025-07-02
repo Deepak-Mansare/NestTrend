@@ -54,6 +54,34 @@ export const fetchCartFromBackend = createAsyncThunk(
     }
 );
 
+export const updateCartQuantityBackend = createAsyncThunk(
+    "cart/updateCartQuantityBackend",
+    async ({ productId, quantity }, thunkApi) => {
+        try {
+            const res = await axios.put(
+                `http://localhost:3000/cart/update/${productId}`,
+                { quantity },
+                {
+                    headers:
+                        { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                }
+            )
+
+            return res.data.cart.products
+                .map((item) => {
+                    const product = item.productId
+                    if (!product || typeof product !== "object") return null
+                    return { product, quantity: item.quantity }
+                })
+                .filter(Boolean)
+        }
+        catch (err) {
+            console.log(err)
+            return thunkApi.rejectWithValue("Failed to update cart quantity")
+        }
+    }
+)
+
 export const clearCartFromBackend = createAsyncThunk(
     "cart/clearCartFromBackend",
     async (_, thunkApi) => {
@@ -92,27 +120,7 @@ const cartSlice = createSlice({
         items: [],
     },
     reducers: {
-        removeFromCart: (state, action) => {
-            state.items = state.items.filter(
-                (item) => item.product._id !== action.payload
-            );
-        },
         clearCart: (state) => {
-            state.items = [];
-        },
-        increaseQuantity: (state, action) => {
-            const item = state.items.find(
-                (item) => item.product._id === action.payload
-            );
-            if (item) item.quantity += 1;
-        },
-        decreaseQuantity: (state, action) => {
-            const item = state.items.find(
-                (item) => item.product._id === action.payload
-            );
-            if (item && item.quantity > 1) item.quantity -= 1;
-        },
-        clearCartCompletely: (state) => {
             state.items = [];
         },
     },
@@ -122,6 +130,9 @@ const cartSlice = createSlice({
                 state.items = action.payload;
             })
             .addCase(addToCartBackend.fulfilled, (state, action) => {
+                state.items = action.payload;
+            })
+            .addCase(updateCartQuantityBackend.fulfilled, (state, action) => {
                 state.items = action.payload;
             })
             .addCase(removeFromCartBackend.fulfilled, (state, action) => {
@@ -135,8 +146,6 @@ const cartSlice = createSlice({
 export const {
     removeFromCart,
     clearCart,
-    increaseQuantity,
-    decreaseQuantity,
     clearCartCompletely,
 } = cartSlice.actions;
 
