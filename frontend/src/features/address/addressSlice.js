@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API } from "../../app/api";
 
 export const addAddress = createAsyncThunk(
     "address/add",
@@ -12,11 +13,12 @@ export const addAddress = createAsyncThunk(
                 return rejectWithValue({ message: "Not authenticated" });
             }
 
-            const res = await axios.post("http://localhost:3000/address/add", formData, {
+            const res = await axios.post(`${API}/address/add`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+
             return res.data.address;
         } catch (err) {
             const errorPayload = err.response?.data || { message: err.message };
@@ -36,7 +38,7 @@ export const getAddresses = createAsyncThunk(
                 return rejectWithValue({ message: "Not authenticated" });
             }
 
-            const res = await axios.get("http://localhost:3000/address", {
+            const res = await axios.get(`${API}/address`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -44,7 +46,7 @@ export const getAddresses = createAsyncThunk(
 
             return res.data.addresses;
         } catch (err) {
-            return rejectWithValue(err.response?.data || err.message);
+            return rejectWithValue(err.response?.data || { message: err.message });
         }
     }
 );
@@ -59,7 +61,7 @@ export const deleteAddress = createAsyncThunk(
                 return rejectWithValue({ message: "Not authenticated" });
             }
 
-            await axios.delete(`http://localhost:3000/address/${id}`, {
+            await axios.delete(`${API}/address/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -85,7 +87,7 @@ export const updateAddress = createAsyncThunk(
                 return rejectWithValue({ message: "Not authenticated" });
             }
 
-            const res = await axios.put(`http://localhost:3000/address/${id}`, formData, {
+            const res = await axios.put(`${API}/address/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -143,12 +145,16 @@ const addressSlice = createSlice({
             })
 
             .addCase(deleteAddress.fulfilled, (state, action) => {
-                state.addresses = state.addresses.filter((addr) => addr._id !== action.payload);
+                state.addresses = state.addresses.filter(
+                    (addr) => addr._id !== action.payload
+                );
             })
 
             .addCase(updateAddress.fulfilled, (state, action) => {
                 const updated = action.payload;
-                const index = state.addresses.findIndex((addr) => addr._id === updated._id);
+                const index = state.addresses.findIndex(
+                    (addr) => addr._id === updated._id
+                );
                 if (index !== -1) {
                     state.addresses[index] = updated;
                 }

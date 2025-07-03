@@ -1,7 +1,7 @@
 const orderModel = require("../models/orderSchema");
 
 const createOrder = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const { products, shippingAddress, totalPrice } = req.body;
 
     try {
@@ -21,7 +21,7 @@ const createOrder = async (req, res) => {
 };
 
 const fetchUserOrders = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user._id;
     try {
         const orders = await orderModel
             .find({ userId })
@@ -35,7 +35,7 @@ const fetchUserOrders = async (req, res) => {
 };
 
 const fetchUserOrder = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const orderId = req.params.id;
 
     try {
@@ -70,7 +70,7 @@ const fetchAdminOrders = async (req, res) => {
 
 const deleteOrder = async (req, res) => {
     const orderId = req.params.id;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     try {
         const order = await orderModel.findOneAndDelete({ _id: orderId, userId });

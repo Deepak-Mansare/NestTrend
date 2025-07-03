@@ -1,3 +1,4 @@
+import { API } from "../app/api";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAddresses, deleteAddress } from "../features/address/addressSlice";
@@ -88,7 +89,7 @@ function Checkout() {
       }
 
       const { data } = await axios.post(
-        "http://localhost:3000/payment/create-order",
+        `${API}/payment/create-order`,
         { amount: grandTotal },
         {
           headers: {
@@ -113,7 +114,7 @@ function Checkout() {
         handler: async function (response) {
           try {
             const verifyRes = await axios.post(
-              "http://localhost:3000/payment/verify",
+              `${API}/payment/verify`,
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,

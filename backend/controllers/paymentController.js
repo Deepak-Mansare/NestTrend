@@ -62,7 +62,7 @@ const verifyPayment = async (req, res) => {
             signature: razorpay_signature,
             amount,
             status: "success",
-        })
+        });
 
         const order = await orderModel.findByIdAndUpdate(
             appOrderId,

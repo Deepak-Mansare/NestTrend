@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios"
+import axios from "axios";
+import { API } from "../../app/api";
 import { fetchCartFromBackend } from "../cart/cartSlice";
 
 export const registerUser = createAsyncThunk(
     "user/registerUser",
     async (formData, thunkApi) => {
         try {
-            const res = await axios.post("http://localhost:3000/auth/register", formData);
+            const res = await axios.post(`${API}/auth/register`, formData);
             return res.data.message;
         }
         catch (err) {
@@ -19,7 +20,7 @@ export const loginUser = createAsyncThunk(
     "user/loginUser",
     async (formData, thunkApi) => {
         try {
-            const res = await axios.post("http://localhost:3000/auth/login", formData);
+            const res = await axios.post(`${API}/auth/login`, formData);
 
             if (res.status !== 200 || !res.data.user) {
                 return thunkApi.rejectWithValue(res.data.message || "Login failed");

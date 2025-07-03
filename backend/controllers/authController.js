@@ -36,7 +36,7 @@ const handleLogin = async (req, res) => {
             }
         });
     } catch (err) {
-        console.error("Login error:", err.message);
+        // Log removed for production
         res.status(500).json({ message: "Something went wrong" });
     }
 };
@@ -77,7 +77,7 @@ const handleRegister = async (req, res) => {
 
         res.status(201).json({ message: "User registered successfully" });
     } catch (err) {
-        console.error("Registration error:", err.message);
+        // Log removed for production
         res.status(500).json({ message: "Something went wrong" });
     }
 };

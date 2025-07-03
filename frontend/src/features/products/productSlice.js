@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { API } from "../../app/api"
 
 export const getAllProducts = createAsyncThunk(
     'products/getAll',
@@ -8,7 +9,7 @@ export const getAllProducts = createAsyncThunk(
             const token = getState().user?.user?.token;
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-            const res = await axios.get("http://localhost:3000/product/getProducts", {
+            const res = await axios.get(`${API}/product/getProducts`, {
                 headers,
             });
             return res.data.products;
@@ -22,7 +23,7 @@ export const getProductById = createAsyncThunk(
     "products/getById",
     async (id, { rejectWithValue }) => {
         try {
-            const res = await axios.get(`http://localhost:3000/product/getProduct/${id}`);
+            const res = await axios.get(`${API}/product/getProduct/${id}`);
             return res.data.product;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch product");

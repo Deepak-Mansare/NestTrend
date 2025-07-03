@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API } from "../../app/api";
 
 export const addToCartBackend = createAsyncThunk(
     "cart/addToCartBackend",
     async (product, thunkApi) => {
         try {
             const res = await axios.post(
-                "http://localhost:3000/cart/add",
+                `${API}/cart/add`,
                 {
                     productId: product._id,
                     quantity: 1,
@@ -35,7 +36,7 @@ export const fetchCartFromBackend = createAsyncThunk(
     "cart/fetchCartFromBackend",
     async (_, thunkApi) => {
         try {
-            const res = await axios.get("http://localhost:3000/cart", {
+            const res = await axios.get(`${API}/cart`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -59,34 +60,34 @@ export const updateCartQuantityBackend = createAsyncThunk(
     async ({ productId, quantity }, thunkApi) => {
         try {
             const res = await axios.put(
-                `http://localhost:3000/cart/update/${productId}`,
+                `${API}/cart/update/${productId}`,
                 { quantity },
                 {
-                    headers:
-                        { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
                 }
-            )
+            );
 
             return res.data.cart.products
                 .map((item) => {
-                    const product = item.productId
-                    if (!product || typeof product !== "object") return null
-                    return { product, quantity: item.quantity }
+                    const product = item.productId;
+                    if (!product || typeof product !== "object") return null;
+                    return { product, quantity: item.quantity };
                 })
-                .filter(Boolean)
-        }
-        catch (err) {
-            console.log(err)
-            return thunkApi.rejectWithValue("Failed to update cart quantity")
+                .filter(Boolean);
+        } catch (err) {
+            console.log(err);
+            return thunkApi.rejectWithValue("Failed to update cart quantity");
         }
     }
-)
+);
 
 export const clearCartFromBackend = createAsyncThunk(
     "cart/clearCartFromBackend",
     async (_, thunkApi) => {
         try {
-            await axios.delete("http://localhost:3000/cart/clear", {
+            await axios.delete(`${API}/cart/clear`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -102,7 +103,7 @@ export const removeFromCartBackend = createAsyncThunk(
     "cart/removeFromCartBackend",
     async (productId, thunkApi) => {
         try {
-            await axios.delete(`http://localhost:3000/cart/remove/${productId}`, {
+            await axios.delete(`${API}/cart/remove/${productId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -139,12 +140,10 @@ const cartSlice = createSlice({
                 state.items = state.items.filter(
                     (item) => item.product._id !== action.payload
                 );
-            })
+            });
     },
 });
 
-export const {
-    clearCart,
-} = cartSlice.actions;
+export const { clearCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

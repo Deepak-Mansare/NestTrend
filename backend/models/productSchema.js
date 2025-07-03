@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        default: "Uncategorized"
+        default: "All"
     },
 }, { timestamps: true })
 

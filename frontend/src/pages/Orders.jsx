@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API } from "../app/api";
 
 function Orders() {
   const user = useSelector((state) => state.user.user);
@@ -9,7 +10,7 @@ function Orders() {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get("http://localhost:3000/order/user", {
+      const { data } = await axios.get(`${API}/order/user`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
@@ -23,7 +24,7 @@ function Orders() {
 
   const deleteOrder = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/order/user/${id}`, {
+      await axios.delete(`${API}/order/user/${id}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
