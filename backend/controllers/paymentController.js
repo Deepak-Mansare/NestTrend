@@ -6,7 +6,7 @@ const cartModel = require("../models/cartSchema");
 const sendEmail = require("../utils/sendEmail");
 
 const createPaymentOrder = async (req, res) => {
-    let { amount } = req.body;
+    const { amount } = req.body;
 
     if (!amount || isNaN(amount)) {
         return res.status(400).json({ success: false, message: "Invalid amount" });

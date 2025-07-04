@@ -3,20 +3,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/sendEmail");
 
-//  POST /auth/login
 const handleLogin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
         const user = await userModel.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        if (!user) return res.status(404).json({ message: "User not found" });
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Incorrect password" });
-        }
+        if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
 
         const token = jwt.sign(
             { id: user._id, role: user.role, email: user.email },
@@ -36,12 +31,10 @@ const handleLogin = async (req, res) => {
             }
         });
     } catch (err) {
-        // Log removed for production
         res.status(500).json({ message: "Something went wrong" });
     }
 };
 
-//  POST /auth/register
 const handleRegister = async (req, res) => {
     const { userName, email, password, gender, mobile, role } = req.body;
 
@@ -77,7 +70,6 @@ const handleRegister = async (req, res) => {
 
         res.status(201).json({ message: "User registered successfully" });
     } catch (err) {
-        // Log removed for production
         res.status(500).json({ message: "Something went wrong" });
     }
 };

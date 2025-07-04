@@ -5,12 +5,14 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const compression = require("compression");
 const connectDB = require("./config/db");
+
 const authRouter = require("./router/authRouter");
 const productRouter = require("./router/productRouter");
 const cartRouter = require("./router/cartRouter");
 const addressRouter = require("./router/addressRouter");
 const orderRouter = require("./router/orderRouter");
 const paymentRouter = require("./router/paymentRouter");
+
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 dotenv.config();
