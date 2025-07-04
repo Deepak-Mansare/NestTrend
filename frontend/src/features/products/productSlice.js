@@ -9,7 +9,8 @@ export const getAllProducts = createAsyncThunk(
             const token = getState().user?.user?.token;
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-            const res = await axios.get(`${API}/api/product/getProducts`, {
+            // ❌ Removed /api from URL
+            const res = await axios.get(`${API}/product/getProducts`, {
                 headers,
             });
             return res.data.products;
@@ -23,7 +24,8 @@ export const getProductById = createAsyncThunk(
     "products/getById",
     async (id, { rejectWithValue }) => {
         try {
-            const res = await axios.get(`${API}/api/product/getProduct/${id}`);
+            // ❌ Removed /api from URL
+            const res = await axios.get(`${API}/product/getProduct/${id}`);
             return res.data.product;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch product");
