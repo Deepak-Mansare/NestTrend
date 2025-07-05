@@ -231,6 +231,10 @@ function Checkout() {
       >
         Proceed to payment
       </button>
+
+      <p className="text-red-600 text-sm italic">
+        This is a demo project. No real money will be deducted.
+      </p>
     </div>
   );
 }
