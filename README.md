@@ -43,23 +43,23 @@ NestTrend is a full-stack MERN e-commerce project for an online clothing store, 
 
 ### 🏠 Home Page (Product Listing)
 
-![Home Page](public/images/readme/Home.png)
+![Home Page](https://raw.githubusercontent.com/Deepak-Mansare/NestTrend/main/frontend/public/images/readme/Home.png)
 
 ### 📄 Product Detail Page
 
-![Product Detail](public/images/readme/ProductDetail.png)
+![Product Detail](https://raw.githubusercontent.com/Deepak-Mansare/NestTrend/main/frontend/public/images/readme/ProductDetail.png)
 
 ### 🛒 Cart Page
 
-![Cart](public/images/readme/Cart.png)
+![Cart](https://raw.githubusercontent.com/Deepak-Mansare/NestTrend/main/frontend/public/images/readme/Cart.png)
 
 ### ✅ Checkout Page
 
-![Checkout](public/images/readme/Checkout.png)
+![Checkout](https://raw.githubusercontent.com/Deepak-Mansare/NestTrend/main/frontend/public/images/readme/Checkout.png)
 
 ### 📦 Order History Page
 
-![Order History](public/images/readme/OrderHistory.png)
+![Order History](https://raw.githubusercontent.com/Deepak-Mansare/NestTrend/main/frontend/public/images/readme/OrderHistory.png)
 
 ---
 
@@ -75,7 +75,7 @@ git clone https://github.com/Deepak-Mansare/NestTrend-backend.git
 ### 2. Backend Setup
 
 ```bash
-cd NestTrend-backend
+cd backend
 npm install
 ```
 
@@ -100,7 +100,7 @@ npm start
 ### 3. Frontend Setup
 
 ```bash
-cd NestTrend-frontend
+cd frontend
 npm install
 ```
 
