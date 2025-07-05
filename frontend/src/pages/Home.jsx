@@ -26,18 +26,22 @@ function Home() {
       </h1>
 
       {loading && <p>Loading Products...</p>}
-      {error && <p className="text-red-500">{error}</p>}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
+      {!loading && error && <p className="text-red-500">{error}</p>}
+
+      {!loading && !error && filteredProducts.length === 0 && (
+        <p>No products found in this category</p>
+      )}
+
+      {!loading && !error && filteredProducts.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+          {filteredProducts.map((product) => (
             <ProductCard key={product._id} product={product} />
-          ))
-        ) : (
-          <p>No products found in this category</p>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
+
 export default Home;
